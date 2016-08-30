@@ -8,9 +8,44 @@
 #include <cmath>
 #include <fstream>
 
-
-
 using namespace std;
+
+
+const double ro_zero = 3000;
+const double d = 2;
+const double delta_lambda = 1;
+const double delta_ro = 0.008;
+
+const int number_of_steps = 5000;
+
+double countR(double ro, double delta_ro, int l, double lambda, double d){
+	double Ri=delta_ro*delta_ro;
+	double Ri_plus_one;
+	double Ri_minus_one=0;
+
+	for (int i = 2; i < number_of_steps; ++i) {
+		Ri_plus_one = 1./((double)i+1.) * (-((double) i+1.)*Ri_minus_one + ((double)i*(2.+0.25*delta_ro*delta_ro) + (double)l*((double)l+1.)/(double)i - lambda*delta_ro*exp(-ro/d))*Ri);
+		Ri_minus_one = Ri;
+		Ri=Ri_plus_one;
+	}
+
+	return Ri_plus_one;
+}
+
+double countEagenValue(double l){
+	double lambda_zero = l+1;
+	double R1, R2;
+	double eagenvalue;
+	int i=0;
+
+	do{
+		R1=countR(ro_zero, delta_ro, l, lambda_zero+delta_lambda*i, d);
+		R2=countR(ro_zero, delta_ro, l, lambda_zero+delta_lambda*(i+1), d);
+		i++;
+
+	} while(R1*R2>0 && R1!=0 && R2!=0);
+	return eagenvalue;
+}
 
 int main(){
 //dane przypadku <------------------------------------------- tu zmieniamy!
